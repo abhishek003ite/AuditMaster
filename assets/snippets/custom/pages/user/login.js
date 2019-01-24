@@ -41,7 +41,7 @@ var SnippetLogin=function()
             }),
             r.valid()&&(t.addClass("m-loader m-loader--right m-loader--light").attr("disabled",!0),
             r.ajaxSubmit({
-                url:"",
+                url:"<?= site_url('welcome/login_auth') ?>",
                 success:function(e,i,a,l){
                     setTimeout(
                         function(){
