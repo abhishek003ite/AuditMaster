@@ -22,6 +22,20 @@ class Welcome extends MY_Controller
 		redirect(base_url().'welcome/index');
     }
     
+    public function forgotPassword()
+    {
+        $data = new stdClass();
+        $email = $this->input->post('email');
+        $findEmail = $this->Login_auth_db->ForgotPassword($email);
+        if ($findEmail) {
+            $this->Login_auth_db->sendpassword($findEmail);
+        } else {
+            // echo "<script>alert(' $email not found, please enter correct email id')</script>";
+            $data->error = $email.' not found, please enter correct email id';
+            $this->load->view('login', $data);
+        }
+    }
+    
     public function auth_login() 
     {
         $data = new stdClass();
@@ -42,6 +56,7 @@ class Welcome extends MY_Controller
 					'name'	=> $user_data['name'],
 					'email'	=> $user_data['email'],
 					'roleId'	=> $user_data['roleId'],
+					'profilePic'    => $user_data['profilePic'],
 					'createdBy'	=> $user_data['createdBy']
 				);
 				$this->session->set_userdata('user_data_session', $user_detail);
