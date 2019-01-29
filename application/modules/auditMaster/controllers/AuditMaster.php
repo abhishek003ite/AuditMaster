@@ -27,6 +27,22 @@ class AuditMaster extends MY_Controller
         }
     }
     
+    function addAuditFormView()
+    {
+        $check = $this->session->userdata('logged_in');
+        $userDetail = $this->session->userdata('user_data_session');
+        if($check){
+            $data['accountants'] = $this->AuditMaster_model->get_accountants();
+            $data['status'] = $this->AuditMaster_model->get_status();
+            $data['workStatus'] = $this->AuditMaster_model->get_work_status();
+            $this->load->view('common/header');
+            $this->load->view('addAuditMaster1', $data);
+            $this->load->view('common/footer');
+        }else{
+            redirect('welcome', 'refresh');
+        }
+    }
+    
     function addAuditMasterFunc()
     {
         $check = $this->session->userdata('logged_in');
@@ -105,37 +121,56 @@ class AuditMaster extends MY_Controller
         $check = $this->session->userdata('logged_in');
         $userDetail = $this->session->userdata('user_data_session');
         if($check){
-            $data['user'] = $this->User_model->getUserById($id);
-            $data['roles'] = $this->User_model->get_roles();
+            $data['auditMaster'] = $this->AuditMaster_model->getAuditById($id);
+            $data['accountants'] = $this->AuditMaster_model->get_accountants();
+            $data['status'] = $this->AuditMaster_model->get_status();
+            $data['workStatus'] = $this->AuditMaster_model->get_work_status();
             $this->load->view('common/header');
-            $this->load->view('editUser', $data);
+            $this->load->view('editAuditMaster', $data);
             $this->load->view('common/footer');
         }else{
             redirect('welcome', 'refresh');
         }
     }
     
-    function editUserFunc($id) {
+    function editAuditMasterFunc($id) {
         $check = $this->session->userdata('logged_in');
         $userDetail = $this->session->userdata('user_data_session');
         if($check){
             $data = $this->input->post();
-            $x = $this->do_upload1($_FILES);
-            // print_r($x);
-            if(isset($x['upload_data'])){
-                $image = $x['upload_data'][0]['file_name'];
-            }
+            $data = $this->input->post();
                 $users = array(
-                    'name'  =>  $data['name'],
-                    'email' =>  $data['email'],
-                    'mobile'    =>  $data['mobile'],
-                    'roleId'    =>  $data['roleId'],
-                    'profilePic'    =>  $image,
-                    'createdBy' =>  $userDetail['id']
+                    'statusId'                  =>  $data['status'],
+                    'workStatusId'              =>  $data['workStatus'],
+                    'engagementDate'            =>  date('Y-m-d', strtotime($data['engagementDate'])),
+                    'nameOfSMSF'                =>  $data['nameOfSMSF'],
+                    'ABN'                       =>  $data['ABN'],
+                    'ATTN'                      =>  $data['attn'],
+                    'nameOfTrustee1'            =>  $data['nameOfTrustee1'],
+                    'nameOfTrustee2'            =>  $data['nameOfTrustee2'],
+                    'nameOfTrustee3'            =>  $data['nameOfTrustee3'],
+                    'nameOfTrustee4'            =>  $data['nameOfTrustee4'],
+                    'nameOfTrustee5'            =>  $data['nameOfTrustee5'],
+                    'nameOfTrustee6'            =>  $data['nameOfTrustee6'],
+                    'nameOfTrCo'                =>  $data['nameOfTRCo'],
+                    'ACN'                       =>  $data['ACN'],
+                    'forTheYearEnded'           =>  $data['forTheYearEnded'],
+                    'accountantId'              =>  $data['nameOfAccountant'],
+                    'accountantAddress'         =>  $data['addressAccountant'],
+                    'invoiceAmountGross'        =>  $data['invoiceAmountGross'],
+                    'invoiceGST'                =>  $data['invoiceAmountGross']*0.1,
+                    'otherExpASICSearch'        =>  $data['otherASICSearch'],
+                    'otherExpTitleSearch'       =>  $data['otherExpTitleSearch'],
+                    'otherExpOtherSpecify'      =>  $data['otherExpOtherSpecify'],
+                    'invoiceTotal'              =>  $data['invoiceAmountGross'] + ($data['invoiceAmountGross'] *0.1)+$data['otherASICSearch']+$data['otherExpTitleSearch']+$data['otherExpOtherSpecify'],
+                    'previousAuditorName'       =>  $data['previousAuditorName'],
+                    'previousAuditorCompany'    =>  $data['peviousAuditorCompany'],
+                    'previousAuditorEmail'      =>  $data['previousAuditorEmail'],
+                    'auditorNotes'               =>  $data['auditorNote']
                 );
-                $this->User_model->update(array('userId' => $id), 'tbl_audit_master', $users);
-                $this->session->set_flashdata('msg', 'Audit Master updated Successfully.');
-                redirect($_SERVER['HTTP_REFERER'], 'refresh');
+            $this->AuditMaster_model->update(array('id' => $id), 'tbl_audit_master', $users);
+            $this->session->set_flashdata('msg', 'Audit Master updated Successfully.');
+            redirect('auditMaster/viewAudit', 'refresh');
         }else{
             redirect('welcome', 'refresh');
         }
@@ -146,7 +181,7 @@ class AuditMaster extends MY_Controller
         $userDetail = $this->session->userdata('user_data_session');
         if($check) {
             if(!empty($id)) {
-                $this->User_model->delete(array('id' => $id), 'tbl_audit_master');
+                $this->AuditMaster_model->delete(array('id' => $id), 'tbl_audit_master');
                 if($red == 'same') {
                     $this->session->set_flashdata('msg', 'Audit Master deleted Successfully.');
                     redirect($_SERVER['HTTP_REFERER'], 'refresh');

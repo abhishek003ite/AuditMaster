@@ -94,10 +94,13 @@ Class AuditMaster_model extends CI_Model {
         return $users;
     }
     
-    function getUserById($id) {
+    function getAuditById($id) {
         $this->db->select('*');
-        $this->db->from('tbl_users');
-        $this->db->where('userId', $id);
+        $this->db->from('tbl_audit_master');
+        $this->db->join('tbl_status_master', 'tbl_status_master.id = tbl_audit_master.statusId');
+        $this->db->join('tbl_workStatus', 'tbl_workStatus.id = tbl_audit_master.workStatusId');
+        $this->db->join('tbl_accountant', 'tbl_accountant.id = tbl_audit_master.accountantId');
+        $this->db->where('tbl_audit_master.id', $id);
         $query = $this->db->get();
         if($query->num_rows() > 0) {
             return $query->result_array();
